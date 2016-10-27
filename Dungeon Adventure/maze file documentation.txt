@@ -1,0 +1,30 @@
+Monsters:[number of types of monsters in game]
+monster_1_name:[lower health bound]-[higher health bound]:[lower damage bound]-[higher damage bound]:[percentage chance of being in random room]
+monster_2_name:[lower health bound]-[higher health bound]:[lower damage bound]-[higher damage bound]:[percentage chance of being in random room]
+...repeat for as many types of monsters as there are in the game
+monster_n_name:[lower health bound]-[higher health bound]:[lower damage bound]-[higher damage bound]:[percentage chance of being in random room]
+Items:[number of types of items in the game]
+item_1_name:[item 1 type: Armor, Weapon, or Health]:[armor damage reduction rate, weapon damage range (5-10), or health restored]:[item weight]
+item_2_name:[item 1 type: Armor, Weapon, or Health]:[armor damage reduction rate, weapon damage range (5-10), or health restored]:[item weight]
+...repeat for as many types of items as there are in the game
+item_n_name:[item 1 type: Armor, Weapon, or Health]:[armor damage reduction rate, weapon damage range (5-10), or health restored]:[item weight]
+[maze height],[maze width]
+Monster:[none, kobold/dragon/etc..., or Random]
+Items:[comma separated list of items in room, like "dead fish,skeleton key", or "none"]
+[comma separated list of directions you can go from this room, like "S,E"]
+...repeat for as many rooms as there are. Rooms are read in the same way, going down each row in a column, then going to next column. same way as original file
+[player start row],[player start column]
+[player max carry weight]
+Trigger
+...triggers are the exact same at the moment, I will probably have to change them but I'm not exactly sure what parts I will change
+
+
+
+
+
+I decided to let the user define the monsters and items. I will of course make my own file(s) for the game for
+a user to play, but this way, anyone can make their own game with their own monsters and items and rooms.
+
+For both monsters and items, the images are dependent on the name of the monster/item.
+For monsters, if we have 3 animation frames, it'll be like: kobold_1.png, kobold_2.png, kobold_3.png
+For items, the image should be static, so it'll just be like: horseshoe.png

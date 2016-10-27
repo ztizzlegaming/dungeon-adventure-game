@@ -1,0 +1,89 @@
+Monsters:3
+kobold:10-15:5-10:50
+ogre:25-30:15-20:35
+dragon:75-100:25-35:15
+Items:3
+health potion:health:10:1
+dagger:weapon:5-10:5
+sword:weapon:10-15:10
+2,3
+Monster:none
+Items:health potion
+S,E
+Monster:kobold
+Items:sword
+N,E
+Monster:ogre
+Items:none
+S,E,W
+Monster:dragon
+Items:dagger
+N,W
+Monster:random
+Items:none
+S,W
+Monster:none
+Items:none
+N
+0,0
+4
+Trigger
+Not Activated
+Enter Text
+eat half-eaten dead skunk
+Lose Game
+None
+None
+None
+None
+The skunk made you sick and you died.  Why the hell would you eat a dead skunk?  Sometimes you get what you deserve!  Oh, and btw, you LOSE!  Game over!
+Trigger
+Not Activated
+Enter Text
+examine skeleton
+Add Item To Game
+1,1
+None
+skeleton key
+None
+When you look closely at the skeleton, you accidentally bump into it.  Something clinks and you see a key fall to the ground!  I bet it's a skeleton key!
+Trigger
+Not Activated
+Items In Rooms
+0,1:horse poop,dead fish,half-eaten dead skunk
+Add Item To Game
+0,1
+The fragrance of the flowers has been permanently destroyed by the combination of wicked smells from things you brought to this area. 
+toxic smelling gas
+None
+The combination of the flowers' fragrance combined with the skunk, dead fish, and horse poop has produced a foul smelling gas.  What an incredible smell you've discovered!  I bet you could bottle it and use it as an explosive!
+Trigger
+Not Activated
+Enter Text
+throw glass bottle
+Delete Item From Game
+None
+None
+None
+glass bottle
+In a fit of rage, you hurl the glass bottle.  It shatters against a rock with a very satisfying sound.  The momentary satisfaction you feel evaporates as a disembodied voice booms out "Hey, stupid!  Who do you think is going to clean that up?"
+Trigger
+Not Activated
+Items In Inventory
+dead fish
+Add Item To Game
+0,0
+And then another dead fish appeared
+another dead fish
+None
+You picked up the dead fish, and another dead fish appears in the room
+Trigger
+Not Activated
+Enter Text
+use skeleton key
+Remove Barrier
+1,2,w
+None
+None
+None
+You use the skeleton key and it opens the door!
