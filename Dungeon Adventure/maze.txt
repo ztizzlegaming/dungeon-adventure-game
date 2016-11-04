@@ -9,13 +9,13 @@ sword:weapon:10-15:10
 2,3
 Monster:none
 Items:health potion
-S,E
+S
 Monster:kobold
 Items:sword
 N,E
 Monster:ogre
 Items:none
-S,E,W
+S,E
 Monster:dragon
 Items:dagger
 N,W
