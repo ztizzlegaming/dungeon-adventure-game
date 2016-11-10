@@ -12,7 +12,10 @@ import com.jordanturley.monster.Monster;
 import com.jordanturley.monster.MonsterFactory;
 
 /**
- * 
+ * The <code>Room</code> class stores information for a room in the dungeon, such as a monster,
+ * items in the room, and the directions you can go from that room.
+ * <br><br>
+ * New Room objects should be created using the <code>RoomFactory</code> class.
  * 
  * @author Jordan Turley
  */
@@ -25,6 +28,8 @@ public class Room {
 	public static final int SOUTH_IMAGES_IDX = 1;
 	public static final int EAST_IMAGES_IDX = 2;
 	public static final int WEST_IMAGES_IDX = 3;
+	
+	public static final int MAX_ITEMS = 3;
 	
 	private Monster monster;
 	private List<Item> items;
@@ -83,6 +88,26 @@ public class Room {
 		return arr;
 	}
 	
+	public void addItem(Item item) {
+		if (items.size() < MAX_ITEMS) {
+			items.add(item);
+		} else {
+			throw new IllegalStateException("There cannot be more than three items in a room");
+		}
+	}
+	
+	public List<Item> getItems() {
+		return items;
+	}
+	
+	public Item getItem(int idx) {
+		return items.get(idx);
+	}
+	
+	public void removeItem(int idx) {
+		items.remove(idx);
+	}
+	
 	public List<Character> getDirections() {
 		return directions;
 	}
@@ -93,5 +118,9 @@ public class Room {
 	
 	public int getNumItems() {
 		return items.size();
+	}
+	
+	public boolean canHoldAnotherItem() {
+		return getNumItems() < MAX_ITEMS;
 	}
 }

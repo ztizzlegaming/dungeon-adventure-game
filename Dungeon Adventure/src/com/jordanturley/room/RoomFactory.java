@@ -6,13 +6,22 @@ import java.util.Map;
 
 import javax.swing.ImageIcon;
 
+/**
+ * The <code>RoomFactory</code> class is used to create new <code>Room</code> objects. To use,
+ * you call the getRoom method, passing it the strings read in from the maze file for the
+ * monster, items, and directions you can go.
+ * <br><br>
+ * The RoomFactory makes use of the Flyweight pattern for the images for the rooms.
+ * 
+ * @author Jordan Turley
+ */
 public class RoomFactory {
 	private static Map<String, ImageIcon> IMAGES = new HashMap<String, ImageIcon>();
 	public static Room getRoom(String monsterStr, String itemsStr, String directionsStr) {
 		Room room = new Room(monsterStr, itemsStr, directionsStr);
 		
 		int roomColor = (int) (Math.random() * 4) + 1;
-		roomColor = 1;
+		roomColor = 1; //TODO Crop the rest of the pictures for the other colors
 		String imageBase = "images" + File.separator + "rooms" + File.separator + "texture" + roomColor + "_";
 		
 		ImageIcon[][] allImages = new ImageIcon[4][];
