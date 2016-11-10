@@ -333,6 +333,7 @@ public class Player {
 				health = maxHealth;
 			}
 			inventory.remove(item);
+			inventoryWeight -= item.getWeight();
 		}
 	}
 	
