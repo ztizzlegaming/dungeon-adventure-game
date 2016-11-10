@@ -67,7 +67,7 @@ public class InventoryPainting extends JComponent {
 		
 		//Draw the player's health
 		g.setFont(new Font(g.getFont().getFontName(), Font.PLAIN, 22));
-		String weightStr = "Weight:" + player.getInventoryWeight() + "/" + player.getMaxInventoryWeight();
+		String weightStr = "Load:" + player.getInventoryWeight() + "/" + player.getMaxInventoryWeight();
 		g.drawString(weightStr, itemSize * 2 + 10, NUM_ITEMS_HEIGHT * itemSize + itemSize / 2 + Window.TEXT_OFFSET);
 		
 		//TODO Add XP, and show the player's level and current xp below their health
