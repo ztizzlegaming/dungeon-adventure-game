@@ -6,16 +6,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import com.jordanturley.game.Game;
+import com.jordanturley.game.Player;
+import com.jordanturley.item.Item;
 import com.jordanturley.room.Room;
 
 /**
@@ -23,12 +26,18 @@ import com.jordanturley.room.Room;
  * 
  * @author Jordan Turley
  */
-public class Window extends JFrame implements KeyListener, MouseListener {
+public class Window extends JFrame implements KeyListener {
 	private static final long serialVersionUID = 1L;
 	
 	public static final Dimension SIZE = new Dimension(600, 800);
 	public static final Dimension MAP_DIALOG_SIZE = new Dimension(500, 400);
-	public static final int SOUTH_PANEL_HEIGHT = 200;
+	public static final int SOUTH_PANEL_HEIGHT = 250;
+	
+	/**
+	 * A small text offset used for drawing the player's direction and health in MoveButtonsPainting, and
+	 * the player's inventory weight in InventoryPainting
+	 */
+	public static final int TEXT_OFFSET = 10;
 	
 	private Game game;
 	
@@ -36,6 +45,8 @@ public class Window extends JFrame implements KeyListener, MouseListener {
 	private JPanel moveButtonsPanel;
 	private JDialog mapDialog;
 	private MapPainting mapPainting;
+	private MoveButtonsPainting moveButtonsPainting;
+	private InventoryPainting inventoryPainting;
 	private FirstPersonPainting firstPersonPainting;
 
 	public Window() throws IOException {
@@ -62,6 +73,7 @@ public class Window extends JFrame implements KeyListener, MouseListener {
 		JPanel firstPersonView = new JPanel();
 		firstPersonView.setLayout(new BorderLayout());
 		firstPersonPainting = new FirstPersonPainting();
+		firstPersonPainting.addMouseListener(new FirstPersonPaintingMouseListener());
 		setFirstPersonViewDir();
 		setFirstPersonViewRoom();
 		firstPersonView.add(firstPersonPainting, BorderLayout.CENTER);
@@ -78,9 +90,10 @@ public class Window extends JFrame implements KeyListener, MouseListener {
 		
 		JButton mapButton = new JButton("Map");
 		
-		//(flex)
+		////////////////////////////////////////////////////////////////////////
 		mapButton.setFocusable(false); //Best line of code in the entire program
-		//(dream) (selfie)
+		////////////////////////////////////////////////////////////////////////
+		
 		mapButtonPanel.add(mapButton, BorderLayout.CENTER);
 		
 		mapButton.addActionListener(new ActionListener() {
@@ -94,13 +107,16 @@ public class Window extends JFrame implements KeyListener, MouseListener {
 		moveButtonsPanel = new JPanel();
 		moveButtonsPanel.setPreferredSize(new Dimension(175, 0));
 		moveButtonsPanel.setLayout(new BorderLayout());
-		moveButtonsPanel.add(new MoveButtonsPainting(), BorderLayout.CENTER);
-		moveButtonsPanel.addMouseListener(this);
+		moveButtonsPainting = new MoveButtonsPainting(game.getPlayer());
+		moveButtonsPanel.add(moveButtonsPainting, BorderLayout.CENTER);
+		moveButtonsPanel.addMouseListener(new MoveButtonsMouseAdapter());
 		southPanel.add(moveButtonsPanel, BorderLayout.WEST);
 		
 		JPanel inventoryPanel = new JPanel();
 		inventoryPanel.setLayout(new BorderLayout());
-		inventoryPanel.add(new InventoryPainting(game.getPlayer()), BorderLayout.CENTER);
+		inventoryPainting = new InventoryPainting(game.getPlayer());
+		inventoryPainting.addMouseListener(new InventoryPaintingMouseListener());
+		inventoryPanel.add(inventoryPainting, BorderLayout.CENTER);
 		southPanel.add(inventoryPanel, BorderLayout.CENTER);
 		
 		setContentPane(mainPanel);
@@ -143,28 +159,6 @@ public class Window extends JFrame implements KeyListener, MouseListener {
 		}
 	}
 	
-	@Override
-	public void mousePressed(MouseEvent e) {
-		int buttonWidth = moveButtonsPanel.getWidth() / 3;
-		int buttonHeight = moveButtonsPanel.getHeight() / 3;
-		int x = e.getX();
-		int y = e.getY();
-		
-		if (x > 0 && x <= buttonWidth && y > 0 && y <= buttonHeight) {
-			turnLeft();
-		} else if (x > buttonWidth && x <= buttonWidth * 2 && y > 0 && y <= buttonHeight) {
-			moveForward();
-		} else if (x > buttonWidth * 2 && x <= buttonWidth * 3 && y > 0 && y <= buttonHeight) {
-			turnRight();
-		} else if (x > 0 && x <= buttonWidth && y > buttonHeight && y <= buttonHeight * 2) {
-			moveLeft();
-		} else if (x > buttonWidth * 2 && x <= buttonWidth * 3 && y > buttonHeight && y <= buttonHeight * 2) {
-			moveRight();
-		} else if (x > buttonWidth && x <= buttonWidth * 2 && y > buttonHeight * 2 && y <= buttonHeight * 3) {
-			moveBack();
-		}
-	}
-	
 	/**
 	 * Turns the player to the left. Called when 'Q' is pressed on the keyboard or the 'turn left' button
 	 * is clicked in the GUI
@@ -173,6 +167,7 @@ public class Window extends JFrame implements KeyListener, MouseListener {
 		game.getPlayer().turnLeft();
 		mapPainting.repaint();
 		setFirstPersonViewDir();
+		moveButtonsPainting.repaint();
 	}
 	
 	/**
@@ -183,6 +178,7 @@ public class Window extends JFrame implements KeyListener, MouseListener {
 		game.getPlayer().turnRight();
 		mapPainting.repaint();
 		setFirstPersonViewDir();
+		moveButtonsPainting.repaint();
 	}
 	
 	/**
@@ -225,52 +221,153 @@ public class Window extends JFrame implements KeyListener, MouseListener {
 		setFirstPersonViewRoom();
 	}
 	
+	/**
+	 * Sets the player's direction on the first person painting object, and repaints. Called
+	 * when the player turns left or right
+	 */
 	private void setFirstPersonViewDir() {
 		int dir = game.getPlayer().getDirection();
 		firstPersonPainting.setDirectionLooking(dir);
 		firstPersonPainting.repaint();
+		
 	}
 	
+	/**
+	 * Sets the current room the player is in on the first person painting object. Called when
+	 * the player moves from one room to another
+	 */
 	private void setFirstPersonViewRoom() {
 		Room curRoom = game.getCurRoom();
 		firstPersonPainting.setCurRoom(curRoom);
 		firstPersonPainting.repaint();
 	}
-
+	
+	/**
+	 * Repaints the first person view, inventory, and map, when an item is picked up or dropped
+	 */
+	private void repaintForItems() {
+		firstPersonPainting.repaint();
+		inventoryPainting.repaint();
+		mapPainting.repaint();
+		moveButtonsPainting.repaint();
+	}
+	
+	/**
+	 * Checks when one of the move buttons is pressed
+	 */
+	private class MoveButtonsMouseAdapter extends MouseAdapter {
+		@Override
+		public void mousePressed(MouseEvent e) {
+			int buttonWidth = moveButtonsPanel.getWidth() / 3;
+			int buttonHeight = moveButtonsPanel.getHeight() / 3;
+			int x = e.getX();
+			int y = e.getY();
+			
+			if (x > 0 && x <= buttonWidth && y > 0 && y <= buttonHeight) {
+				turnLeft();
+			} else if (x > buttonWidth && x <= buttonWidth * 2 && y > 0 && y <= buttonHeight) {
+				moveForward();
+			} else if (x > buttonWidth * 2 && x <= buttonWidth * 3 && y > 0 && y <= buttonHeight) {
+				turnRight();
+			} else if (x > 0 && x <= buttonWidth && y > buttonHeight && y <= buttonHeight * 2) {
+				moveLeft();
+			} else if (x > buttonWidth * 2 && x <= buttonWidth * 3 && y > buttonHeight && y <= buttonHeight * 2) {
+				moveRight();
+			} else if (x > buttonWidth && x <= buttonWidth * 2 && y > buttonHeight * 2 && y <= buttonHeight * 3) {
+				moveBack();
+			}
+		}
+	}
+	
+	/**
+	 * Checks when the first person view is clicked on, for attacking monsters or picking up items
+	 */
+	private class FirstPersonPaintingMouseListener extends MouseAdapter {
+		@Override
+		public void mousePressed(MouseEvent e) {
+			int x = e.getX();
+			int y = e.getY();
+			
+			int panelWidth = firstPersonPainting.getWidth() / 3;
+			int paintingHeight = firstPersonPainting.getHeight();
+			
+			int itemImgSize = panelWidth / 3;
+			
+			//TODO move a lot of this to the Game class. The window class should be mainly for graphics.
+			//TODO Just check here if the click is in the right place, then send it to the Game class to handle it
+			
+			if (x > panelWidth && x < panelWidth * 2) {
+				if (y > paintingHeight - FirstPersonPainting.ITEM_IMAGE_BOTTOM_MARGIN - itemImgSize && y < paintingHeight - FirstPersonPainting.ITEM_IMAGE_BOTTOM_MARGIN) {
+					x -= panelWidth;
+					int idx = x / itemImgSize;
+					Room room = game.getCurRoom();
+					if (room.getNumItems() >= idx + 1) {
+						Item item = room.getItem(idx);
+						Player player = game.getPlayer();
+						if (player.canCarry(item)) {
+							player.addItem(item);
+							room.removeItem(idx);
+							repaintForItems();
+						} else {
+							System.out.println("Can't carry this item! Too heavy!");
+							System.out.println(player + ", " + item.getWeight());
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Checks when the inventory painting is clicked on, for using or dropping an item
+	 */
+	private class InventoryPaintingMouseListener extends MouseAdapter {
+		@Override
+		public void mousePressed(MouseEvent e) {
+			int x = e.getX();
+			int y = e.getY();
+			
+			//Calculate the size of the images in the painting
+			int imgSize = inventoryPainting.getWidth() / InventoryPainting.NUM_ITEMS_WIDTH;
+			
+			//Calculate the height of the actual part that shows the items
+			int yItemsHeight = imgSize * InventoryPainting.NUM_ITEMS_HEIGHT;
+			
+			//TODO move a lot of this to the Game class. The window class should be mainly for graphics.
+			//TODO Just check here if the click is in the right place, then send it to the Game class to handle it
+			
+			if (y < yItemsHeight) {
+				int xIdx = x / imgSize;
+				int yIdx = y / imgSize;
+				int idx = xIdx + yIdx * InventoryPainting.NUM_ITEMS_WIDTH;
+				
+				Player player = game.getPlayer();
+				if (player.getNumItems() >= idx + 1) { //Make sure it is a valid index
+					Item item = player.getItem(idx);
+					
+					if (SwingUtilities.isLeftMouseButton(e)) {
+						player.useItem(item);
+						repaintForItems();
+					} else if (SwingUtilities.isRightMouseButton(e) && item.canDrop()) {
+						Room room = game.getCurRoom();
+						if (room.canHoldAnotherItem()) {
+							player.removeItem(idx);
+							room.addItem(item);
+							repaintForItems();
+						} else {
+							System.out.println("A room can hold a max of " + Room.MAX_ITEMS + " items");
+						}
+					} else {
+						//Middle mouse button, print name of item and it's info?
+					}
+				}
+			}
+		}
+	}
+	
 	@Override
 	public void keyReleased(KeyEvent e) {}
 
 	@Override
 	public void keyTyped(KeyEvent e) {}
-
-	@Override
-	public void mouseClicked(MouseEvent e) {}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {}
-
-	@Override
-	public void mouseExited(MouseEvent e) {}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {}
-	
-	private class FirstPersonPaintingMouseListener implements MouseListener {
-		@Override
-		public void mousePressed(MouseEvent arg0) {
-			
-		}
-		
-		@Override
-		public void mouseClicked(MouseEvent arg0) {}
-
-		@Override
-		public void mouseEntered(MouseEvent arg0) {}
-
-		@Override
-		public void mouseExited(MouseEvent arg0) {}
-
-		@Override
-		public void mouseReleased(MouseEvent arg0) {}
-	}
 }
