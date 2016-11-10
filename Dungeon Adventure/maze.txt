@@ -2,22 +2,24 @@ Monsters:3
 kobold:10-15:5-10:50
 ogre:25-30:15-20:35
 dragon:75-100:25-35:15
-Items:3
+Items:5
 health potion:health:10:1
 dagger:weapon:5-10:5
 sword:weapon:10-15:10
+gold:health:10:1
+iron armor:armor:10:10
 2,3
 Monster:none
-Items:health potion
+Items:gold,health potion,dagger
 S
 Monster:kobold
-Items:sword
+Items:health potion,iron armor
 N,E
 Monster:ogre
-Items:none
+Items:sword
 S,E
 Monster:dragon
-Items:dagger
+Items:none
 N,W
 Monster:random
 Items:none
@@ -26,7 +28,7 @@ Monster:none
 Items:none
 N
 0,0
-4
+100
 Trigger
 Not Activated
 Enter Text
