@@ -11,8 +11,8 @@ import javax.swing.ImageIcon;
 public class Armor extends Item {
 	private int damageReduction;
 	
-	public Armor(String name, int weight, ImageIcon image, int damageReduction) {
-		super(name, weight, image);
+	public Armor(String name, int weight, boolean canDrop, ImageIcon image, int damageReduction) {
+		super(name, weight, canDrop, image);
 		this.damageReduction = damageReduction;
 	}
 	

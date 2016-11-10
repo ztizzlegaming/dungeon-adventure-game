@@ -11,8 +11,8 @@ import javax.swing.ImageIcon;
 public class HealthItem extends Item {
 	private int healthRestore;
 	
-	public HealthItem(String name, int weight, ImageIcon image, int healthRestore) {
-		super(name, weight, image);
+	public HealthItem(String name, int weight, boolean canDrop, ImageIcon image, int healthRestore) {
+		super(name, weight, canDrop, image);
 
 		this.healthRestore = healthRestore;
 	}

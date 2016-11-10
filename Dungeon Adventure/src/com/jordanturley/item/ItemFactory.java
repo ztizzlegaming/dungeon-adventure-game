@@ -11,7 +11,7 @@ import javax.swing.ImageIcon;
  * all the information for a specific item, from the text file when user's define what items are in the game.
  * Then, call getItem, passing the name of the item, to get a new item object.
  * 
- * This class uses the Prototype and Flyweight patterns
+ * This class uses the Flyweight pattern
  * 
  * @author Jordan Turley
  */
@@ -32,7 +32,7 @@ public class ItemFactory {
 		//Get the image for the item
 		ImageIcon image = null;
 		if (!IMAGES.containsKey(name)) {
-			image = new ImageIcon("images" + File.separator + name + ".png");
+			image = new ImageIcon("images" + File.separator + "items" + File.separator + name + ".png");
 			IMAGES.put(name, image);
 		} else {
 			image = IMAGES.get(name);
@@ -47,17 +47,17 @@ public class ItemFactory {
 		switch (type) {
 		case "armor":
 			int damageReduction = Integer.parseInt(effectValue);
-			item = new Armor(name, weight, image, damageReduction);
+			item = new Armor(name, weight, true, image, damageReduction);
 			break;
 		case "weapon":
 			String[] damageParts = effectValue.split("-");
 			int minDamage = Integer.parseInt(damageParts[0]);
 			int maxDamage = Integer.parseInt(damageParts[1]);
-			item = new Weapon(name, weight, image, minDamage, maxDamage);
+			item = new Weapon(name, weight, true, image, minDamage, maxDamage);
 			break;
 		case "health":
 			int healthRestore = Integer.parseInt(effectValue);
-			item = new HealthItem(name, weight, image, healthRestore);
+			item = new HealthItem(name, weight, true, image, healthRestore);
 			break;
 		default:
 			throw new IllegalArgumentException("The item type was not recognized.");
@@ -77,6 +77,6 @@ public class ItemFactory {
 			//This will happen if the user doesn't declare an item in the first part of the text file
 			throw new IllegalStateException("The item you tried to get was not found. Did you forget to declare it?");
 		}
-		return (Item) item.clone();
+		return item;
 	}
 }

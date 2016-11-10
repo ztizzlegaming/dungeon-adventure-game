@@ -13,8 +13,8 @@ public class Weapon extends Item {
 	private int minDamage;
 	private int maxDamage;
 
-	public Weapon(String name, int weight, ImageIcon image, int minDamage, int maxDamage) {
-		super(name, weight, image);
+	public Weapon(String name, int weight, boolean canDrop, ImageIcon image, int minDamage, int maxDamage) {
+		super(name, weight, canDrop, image);
 		
 		this.minDamage = minDamage;
 		this.maxDamage = maxDamage;

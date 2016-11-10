@@ -8,10 +8,10 @@ import javax.swing.ImageIcon;
  * 
  * @author Jordan Turley
  */
-public abstract class Item implements Cloneable {
+public abstract class Item {
 	private String name;
-	
 	private int weight;
+	private boolean canDrop;
 	
 	private ImageIcon image;
 	
@@ -21,9 +21,10 @@ public abstract class Item implements Cloneable {
 	 * @param weight The weight of the item
 	 * @param image The image of the Item
 	 */
-	public Item(String name, int weight, ImageIcon image) {
+	public Item(String name, int weight, boolean canDrop, ImageIcon image) {
 		this.name = name;
 		this.weight = weight;
+		this.canDrop = canDrop;
 		this.image = image;
 	}
 	
@@ -35,18 +36,16 @@ public abstract class Item implements Cloneable {
 		return weight;
 	}
 	
+	public boolean canDrop() {
+		return canDrop;
+	}
+	
 	public ImageIcon getImage() {
 		return image;
 	}
 	
 	@Override
-	public Object clone() {
-		Object o = null;
-		try {
-			o = super.clone();
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-		}
-		return o;
+	public String toString() {
+		return name;
 	}
 }
