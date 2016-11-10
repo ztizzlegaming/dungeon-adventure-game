@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.jordanturley.graphics.Window;
 import com.jordanturley.item.ItemFactory;
 import com.jordanturley.monster.MonsterFactory;
 import com.jordanturley.room.Room;
@@ -51,10 +50,16 @@ public class Game {
 		reader.close();
 	}
 	
+	/**
+	 * Reads in the monsters and their stats from the maze file
+	 * @param reader The reader that has already been initialized with the maze file
+	 * @throws IOException If something goes wrong with the reader
+	 */
 	private void readInMonsters(BufferedReader reader) throws IOException {
 		String monstersNum = reader.readLine();
 		String[] monstersNumParts = monstersNum.split(":");
 		int numMonsters = Integer.parseInt(monstersNumParts[1]);
+		
 		for (int i1 = 0; i1 < numMonsters; i1++) {
 			String monsterStr = reader.readLine();
 			String[] monsterParts = monsterStr.split(":");
@@ -68,6 +73,11 @@ public class Game {
 		}
 	}
 	
+	/**
+	 * Reads in the items and their stats from the maze file
+	 * @param reader The reader that has already been initialized with the maze file
+	 * @throws IOException If something goes wrong with the reader
+	 */
 	private void readInItems(BufferedReader reader) throws IOException {
 		String itemsNum = reader.readLine();
 		String[] itemsNumParts = itemsNum.split(":");
@@ -85,6 +95,11 @@ public class Game {
 		}
 	}
 	
+	/**
+	 * Reads in the rooms (the monster in each room, and the items) from the maze file
+	 * @param reader The reader that has already been initialized with the maze file
+	 * @throws IOException If something goes wrong with the reader
+	 */
 	private void readInRooms(BufferedReader reader) throws IOException {
 		String heightWidth = reader.readLine();
 		String[] heightWidthParts = heightWidth.split(",");
@@ -104,6 +119,11 @@ public class Game {
 		}
 	}
 	
+	/**
+	 * Reads in the information for the player (their starting position and max carry weight) from the maze file
+	 * @param reader The reader that has already been initialized with the maze file
+	 * @throws IOException If something goes wrong with the reader
+	 */
 	private void readInPlayerInfo(BufferedReader reader) throws IOException {
 		String startLocXYStr = reader.readLine();
 		String[] startLocXY = startLocXYStr.split(",");
@@ -116,6 +136,11 @@ public class Game {
 		player = new Player(startX, startY, width, height, maxInventorySize);
 	}
 	
+	/**
+	 * Reads in the triggers from the maze file
+	 * @param reader The reader that has already been initialized with the maze file
+	 * @throws IOException If something goes wrong with the reader
+	 */
 	private void readInTriggers(BufferedReader reader) throws IOException {
 		String triggerStr = reader.readLine();
 		while (triggerStr != null) {
@@ -144,6 +169,10 @@ public class Game {
 		return player;
 	}
 	
+	/**
+	 * Moves the player forward, depending on their direction,
+	 * making sure they do not go through a wall
+	 */
 	public void movePlayerForward() {
 		int dir = player.getDirection();
 		switch (dir) {
@@ -170,6 +199,10 @@ public class Game {
 		}
 	}
 	
+	/**
+	 * Moves the player backward, depending on their direction,
+	 * making sure they do not go through a wall
+	 */
 	public void movePlayerBack() {
 		int dir = player.getDirection();
 		switch (dir) {
@@ -196,6 +229,10 @@ public class Game {
 		}
 	}
 	
+	/**
+	 * Moves the player left, depending on their direction,
+	 * making sure they do not go through a wall
+	 */
 	public void movePlayerLeft() {
 		int dir = player.getDirection();
 		switch (dir) {
@@ -222,6 +259,10 @@ public class Game {
 		}
 	}
 	
+	/**
+	 * Moves the player forward, depending on their direction,
+	 * making sure they do not go through a wall
+	 */
 	public void movePlayerRight() {
 		int dir = player.getDirection();
 		switch (dir) {
@@ -248,14 +289,11 @@ public class Game {
 		}
 	}
 	
+	/**
+	 * Gets the current room, based on the player's current location
+	 * @return The current room that the player is in
+	 */
 	public Room getCurRoom() {
 		return rooms[player.getY()][player.getX()];
-	}
-	
-	/**
-	 * Starts the game
-	 */
-	public void play() {
-		
 	}
 }

@@ -13,7 +13,8 @@ import com.jordanturley.game.Player;
 import com.jordanturley.room.Room;
 
 /**
- * 
+ * The <code>MapPainting</code> class extends from JComponent and overrides the paint method, to
+ * paint the rooms and walls to the map JDialog
  * 
  * @author Jordan Turley
  */
