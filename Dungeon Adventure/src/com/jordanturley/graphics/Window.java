@@ -259,7 +259,7 @@ public class Window extends JFrame implements KeyListener {
 		@Override
 		public void mousePressed(MouseEvent e) {
 			int buttonWidth = moveButtonsPanel.getWidth() / 3;
-			int buttonHeight = moveButtonsPanel.getHeight() / 3;
+			int buttonHeight = moveButtonsPanel.getHeight() / 4;
 			int x = e.getX();
 			int y = e.getY();
 			
