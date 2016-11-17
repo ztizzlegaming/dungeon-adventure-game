@@ -123,4 +123,12 @@ public class Room {
 	public boolean canHoldAnotherItem() {
 		return getNumItems() < MAX_ITEMS;
 	}
+	
+	public Monster getMonster() {
+		return monster;
+	}
+	
+	public boolean hasMonster() {
+		return monster != null;
+	}
 }

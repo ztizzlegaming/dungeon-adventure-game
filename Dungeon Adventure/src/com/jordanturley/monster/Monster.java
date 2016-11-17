@@ -19,6 +19,7 @@ public class Monster {
 	private String name;
 	
 	private int health;
+	private final int maxHealth;
 	private boolean alive;
 	
 	private int lowerDamage;
@@ -39,6 +40,7 @@ public class Monster {
 		this.name = name;
 		
 		this.health = health;
+		maxHealth = health;
 		alive = true;
 		
 		this.lowerDamage = lowerDamage;
@@ -54,6 +56,10 @@ public class Monster {
 	
 	public int getHealth() {
 		return health;
+	}
+	
+	public int getMaxHealth() {
+		return maxHealth;
 	}
 	
 	public void doDamage(int damage) {

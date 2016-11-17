@@ -47,7 +47,7 @@ public class MonsterFactory {
 			
 			ImageIcon[] images = new ImageIcon[Monster.NUM_ANIMATION_FRAMES];
 			for (int i1 = 0; i1 < Monster.NUM_ANIMATION_FRAMES; i1++) {
-				String path = "monster_images" + File.separator + name + "_" + (i1 + 1) + ".png";
+				String path = "images" + File.separator + "monsters" + File.separator + name + "_" + (i1 + 1) + ".png";
 				ImageIcon image = new ImageIcon(path);
 				images[i1] = image;
 			}

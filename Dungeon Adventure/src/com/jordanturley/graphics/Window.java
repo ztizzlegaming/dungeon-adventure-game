@@ -19,9 +19,14 @@ import javax.swing.SwingUtilities;
 import com.jordanturley.game.Game;
 import com.jordanturley.game.Player;
 import com.jordanturley.item.Item;
+import com.jordanturley.item.Weapon;
+import com.jordanturley.monster.Monster;
 import com.jordanturley.room.Room;
 
 /**
+ * The <code>Window</code> class is the main Window graphics class. This class extends from JFrame,
+ * and kind of brings everything in the program together.
+ * 
  * received help from kate young. she caught my capitalization error!!!! :D 
  * 
  * @author Jordan Turley
@@ -48,15 +53,21 @@ public class Window extends JFrame implements KeyListener {
 	private MoveButtonsPainting moveButtonsPainting;
 	private InventoryPainting inventoryPainting;
 	private FirstPersonPainting firstPersonPainting;
+	
+	private Thread monsterThread;
 
 	public Window() throws IOException {
 		super("Dungeon Adventure");
+		
 		setSize(SIZE);
 		setLocationRelativeTo(null);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		game = new Game("maze.txt");
+		
+		monsterThread = new Thread(new MonsterThreadRunnable());
+		monsterThread.start();
 		
 		setupMainPanel();
 		setupMapDialog();
@@ -315,6 +326,23 @@ public class Window extends JFrame implements KeyListener {
 					}
 				}
 			}
+			
+			if (x > panelWidth + (panelWidth / 2 - FirstPersonPainting.MONSTER_IMAGE_WIDTH / 2) &&
+				x < panelWidth + (panelWidth / 2 + FirstPersonPainting.MONSTER_IMAGE_WIDTH / 2)) {
+				
+				if (y > paintingHeight / 2 - FirstPersonPainting.MONSTER_IMAGE_HEIGHT / 2 - FirstPersonPainting.ITEM_IMAGE_BOTTOM_MARGIN &&
+					y < paintingHeight / 2 + FirstPersonPainting.MONSTER_IMAGE_HEIGHT / 2 - FirstPersonPainting.ITEM_IMAGE_BOTTOM_MARGIN) {
+					if (game.getCurRoom().hasMonster()) {
+						Monster monster = game.getCurRoom().getMonster();
+						if (monster.isAlive()) {
+							Weapon curWeapon = game.getPlayer().getActiveWeapon();
+							
+							monster.doDamage(curWeapon.getDamage());
+							firstPersonPainting.repaint();
+						}
+					}
+				}
+			}
 		}
 	}
 	
@@ -345,10 +373,10 @@ public class Window extends JFrame implements KeyListener {
 				if (player.getNumItems() >= idx + 1) { //Make sure it is a valid index
 					Item item = player.getItem(idx);
 					
-					if (SwingUtilities.isLeftMouseButton(e)) {
+					if (SwingUtilities.isLeftMouseButton(e)) { //Use the item
 						player.useItem(item);
 						repaintForItems();
-					} else if (SwingUtilities.isRightMouseButton(e) && item.canDrop()) {
+					} else if (SwingUtilities.isRightMouseButton(e) && item.canDrop()) { //Drop the item
 						Room room = game.getCurRoom();
 						if (room.canHoldAnotherItem()) {
 							player.removeItem(idx);
@@ -370,4 +398,30 @@ public class Window extends JFrame implements KeyListener {
 
 	@Override
 	public void keyTyped(KeyEvent e) {}
+	
+	/**
+	 * This class is used by the monsterThread object, for controlling all of the monsters in the game.
+	 * It is started as soon as the game is started, and if the room has a monster, it animates it
+	 * and attacks the player.
+	 */
+	private class MonsterThreadRunnable implements Runnable {
+		@Override
+		public void run() {
+			while (true) {
+				try {
+					Thread.sleep(750);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				
+				Room curRoom = game.getCurRoom();
+				if (curRoom.hasMonster() && curRoom.getMonster().isAlive()) {
+					curRoom.getMonster().nextImage();
+					game.getPlayer().doDamage(curRoom.getMonster().getDamage());
+					firstPersonPainting.repaint();
+					moveButtonsPainting.repaint();
+				}
+			}
+		}
+	}
 }
