@@ -410,16 +410,16 @@ public class Window extends JFrame implements KeyListener {
 			while (true) {
 				try {
 					Thread.sleep(750);
+					
+					Room curRoom = game.getCurRoom();
+					if (curRoom.hasMonster() && curRoom.getMonster().isAlive()) {
+						curRoom.getMonster().nextImage();
+						game.getPlayer().doDamage(curRoom.getMonster().getDamage());
+						firstPersonPainting.repaint();
+						moveButtonsPainting.repaint();
+					}
 				} catch (InterruptedException e) {
 					e.printStackTrace();
-				}
-				
-				Room curRoom = game.getCurRoom();
-				if (curRoom.hasMonster() && curRoom.getMonster().isAlive()) {
-					curRoom.getMonster().nextImage();
-					game.getPlayer().doDamage(curRoom.getMonster().getDamage());
-					firstPersonPainting.repaint();
-					moveButtonsPainting.repaint();
 				}
 			}
 		}
