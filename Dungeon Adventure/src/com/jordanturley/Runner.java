@@ -1,6 +1,5 @@
 package com.jordanturley;
 
-import java.io.IOException;
 import com.jordanturley.graphics.Window;
 
 /**
