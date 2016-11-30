@@ -22,6 +22,8 @@ import com.jordanturley.item.Item;
 import com.jordanturley.item.Weapon;
 import com.jordanturley.monster.Monster;
 import com.jordanturley.room.Room;
+import com.jordanturley.thread.MonsterCombatRunnable;
+import com.jordanturley.thread.MusicRunnable;
 
 /**
  * The <code>Window</code> class is the main Window graphics class. This class extends from JFrame,
@@ -38,6 +40,8 @@ public class Window extends JFrame implements KeyListener {
 	public static final Dimension MAP_DIALOG_SIZE = new Dimension(500, 400);
 	public static final int SOUTH_PANEL_HEIGHT = 250;
 	
+	public static final File CALM_MUSIC = new File("audio" + File.separator + "The_Weeknd_-_Starboy_feat.wav");
+	public static final File ACTION_MUSIC = new File("audio" + File.separator + "Kenny_Loggins_-_Danger_Zone.wav");
 	/**
 	 * A small text offset used for drawing the player's direction and health in MoveButtonsPainting, and
 	 * the player's inventory weight in InventoryPainting
@@ -72,6 +76,21 @@ public class Window extends JFrame implements KeyListener {
 		setupMainPanel();
 		setupMapDialog();
 		
+		MonsterCombatRunnable mcr = new MonsterCombatRunnable(game, firstPersonPainting, moveButtonsPainting);
+		monsterThread = new Thread(mcr);
+		monsterThread.start();
+
+		File music;
+		if (game.getCurRoom().hasMonster()) {
+			music = ACTION_MUSIC;
+		} else {
+			music = CALM_MUSIC;
+		}
+
+		musicRunnable = new MusicRunnable(music);
+		Thread musicThread = new Thread(musicRunnable);
+		musicThread.start();
+
 		setVisible(true);
 	}
 	
@@ -163,6 +182,30 @@ public class Window extends JFrame implements KeyListener {
 			turnLeft();
 		} else if (code == KeyEvent.VK_E) {
 			turnRight();
+	/**
+	 * Checks if the music should change after moving from one room to another
+	 */
+	private void checkMusicChange() {
+		try {
+			Room cur = game.getCurRoom();
+			if (cur.hasMonster() && cur.getMonster().isAlive()) {
+				if (!monsterSoundPlaying) {
+					//If there is a monster and monster music isn't playing
+					musicRunnable.changeMusic(ACTION_MUSIC);
+					monsterSoundPlaying = true;
+				}
+			} else {
+				if (monsterSoundPlaying) {
+					//If there is no monster and monster music is playing
+					musicRunnable.changeMusic(CALM_MUSIC);
+					monsterSoundPlaying = false;
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 		}
 		
 		if (code == KeyEvent.VK_ESCAPE) {
@@ -200,8 +243,9 @@ public class Window extends JFrame implements KeyListener {
 		game.movePlayerForward();
 		mapPainting.repaint();
 		setFirstPersonViewRoom();
+		checkMusicChange();
 	}
-	
+
 	/**
 	 * Moves the player backward. Called when 'S' is pressed on the keyboard or the 'down' button is clicked
 	 * in the GUI
@@ -210,8 +254,9 @@ public class Window extends JFrame implements KeyListener {
 		game.movePlayerBack();
 		mapPainting.repaint();
 		setFirstPersonViewRoom();
+		checkMusicChange();
 	}
-	
+
 	/**
 	 * Moves the player to the left. Called when 'S' is pressed on the keyboard or the 'left' button is clicked
 	 * in the GUI
@@ -220,8 +265,9 @@ public class Window extends JFrame implements KeyListener {
 		game.movePlayerLeft();
 		mapPainting.repaint();
 		setFirstPersonViewRoom();
+		checkMusicChange();
 	}
-	
+
 	/**
 	 * Moves the player to the right. Called when 'D' is pressed on the keyboard or the 'right' button is clicked
 	 * in the GUI
@@ -230,8 +276,9 @@ public class Window extends JFrame implements KeyListener {
 		game.movePlayerRight();
 		mapPainting.repaint();
 		setFirstPersonViewRoom();
+		checkMusicChange();
 	}
-	
+
 	/**
 	 * Sets the player's direction on the first person painting object, and repaints. Called
 	 * when the player turns left or right
