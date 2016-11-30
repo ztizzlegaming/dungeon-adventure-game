@@ -15,8 +15,6 @@ Items:[comma separated list of items in room, like "dead fish,skeleton key", or 
 ...repeat for as many rooms as there are. Rooms are read in the same way, going down each row in a column, then going to next column. same way as original file
 [player start row],[player start column]
 [player max carry weight]
-Trigger
-...triggers are the exact same at the moment, I will probably have to change them but I'm not exactly sure what parts I will change
 
 
 

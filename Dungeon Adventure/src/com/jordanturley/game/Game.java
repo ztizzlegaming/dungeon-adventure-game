@@ -3,16 +3,12 @@ package com.jordanturley.game;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import com.jordanturley.item.ItemFactory;
 import com.jordanturley.monster.MonsterFactory;
 import com.jordanturley.room.Room;
 import com.jordanturley.room.RoomFactory;
-import com.jordanturley.trigger.Trigger;
-import com.jordanturley.trigger.TriggerFactory;
 
 /**
  * The <code>Game</code> class is used to play the dungeon adventure game.
@@ -28,8 +24,6 @@ public class Game {
 	
 	private Room[][] rooms;
 	
-	private List<Trigger> triggers;
-	
 	private Player player;
 	
 	/**
@@ -38,14 +32,11 @@ public class Game {
 	 * @throws IOException If the map file cannot be found
 	 */
 	public Game(String filename) throws IOException {
-		triggers = new ArrayList<Trigger>();
-		
 		BufferedReader reader = new BufferedReader(new FileReader(filename));
 		readInMonsters(reader);
 		readInItems(reader);
 		readInRooms(reader);
 		readInPlayerInfo(reader);
-		readInTriggers(reader);
 		
 		reader.close();
 	}
@@ -134,31 +125,6 @@ public class Game {
 		int maxInventorySize = Integer.parseInt(maxInventorySizeStr);
 		
 		player = new Player(startX, startY, width, height, maxInventorySize);
-	}
-	
-	/**
-	 * Reads in the triggers from the maze file
-	 * @param reader The reader that has already been initialized with the maze file
-	 * @throws IOException If something goes wrong with the reader
-	 */
-	private void readInTriggers(BufferedReader reader) throws IOException {
-		String triggerStr = reader.readLine();
-		while (triggerStr != null) {
-			String activated = reader.readLine();
-			String activationMethod = reader.readLine();
-			String whatActivates = reader.readLine();
-			String effectType = reader.readLine();
-			String roomAffected = reader.readLine();
-			String textAddToRoom = reader.readLine();
-			String itemsToAdd = reader.readLine();
-			String itemsToRemove = reader.readLine();
-			String triggerText = reader.readLine();
-			
-			Trigger trigger = TriggerFactory.getTrigger(activated, activationMethod, whatActivates, effectType, roomAffected, textAddToRoom, itemsToAdd, itemsToRemove, triggerText);
-			triggers.add(trigger);
-			
-			triggerStr = reader.readLine();
-		}
 	}
 	
 	public Room[][] getRooms() {
