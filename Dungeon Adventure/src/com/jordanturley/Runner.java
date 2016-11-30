@@ -11,8 +11,12 @@ import com.jordanturley.graphics.Window;
 public class Runner {
 	public static void main(String[] args) {
 		try {
-			new Window();
-		} catch (IOException e) {
+			if (args.length > 0) {
+				new Window(args[0]);
+			} else {
+				new Window();
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
