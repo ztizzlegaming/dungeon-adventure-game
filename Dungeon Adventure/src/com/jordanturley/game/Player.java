@@ -52,6 +52,10 @@ public class Player {
 	private int health;
 	private int maxHealth;
 	
+	private int xp;
+	private int level;
+	private int levelUpXp;
+	
 	private Weapon activeWeapon;
 	private Armor activeArmor;
 	
@@ -81,6 +85,10 @@ public class Player {
 		dir = DIR_NORTH;
 		health = 100;
 		maxHealth = 100;
+		
+		xp = 0;
+		level = 1;
+		levelUpXp = 10;
 		
 		this.mazeWidth = mazeWidth;
 		this.mazeHeight = mazeHeight;
@@ -135,9 +143,26 @@ public class Player {
 		return health;
 	}
 	
+	public boolean isAlive() {
+		return health > 0;
+	}
+	
 	public int getMaxHealth() {
 		return maxHealth;
 	}
+	
+	public int getXp() {
+		return xp;
+	}
+	
+	public int getLevelUpXp() {
+		return levelUpXp;
+	}
+	
+	public int getLevel() {
+		return level;
+	}
+	
 	
 	/**
 	 * Moves the player forward, based on the direction they are facing
@@ -342,10 +367,38 @@ public class Player {
 	 * @param damage The amount of damage to do.
 	 */
 	public void doDamage(int damage) {
+		double damagePercent = (double) (100 - activeArmor.getDamageReduction()) / 100;
+		damage *= damagePercent;
 		health -= damage;
 		if (health <= 0) {
 			health = 0;
 			//TODO kill the character or something
 		}
+	}
+	
+	/**
+	 * Adds xp, and checks if user leveled up
+	 * @param xpToAdd The amount of xp to add
+	 */
+	public void addXp(int xpToAdd) {
+		xp += xpToAdd;
+		
+		if (xp >= levelUpXp) {
+			levelUp();
+		}
+	}
+	
+	/**
+	 * Levels up the player, adding 25 to their health and weight they can carry 
+	 */
+	private void levelUp() {
+		xp %= levelUpXp;
+		levelUpXp += 5;
+		level++;
+		
+		maxHealth += 25;
+		health += 25;
+		
+		maxInventoryWeight += 25;
 	}
 }

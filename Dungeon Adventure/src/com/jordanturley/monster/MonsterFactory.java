@@ -51,7 +51,8 @@ public class MonsterFactory {
 				ImageIcon image = new ImageIcon(path);
 				images[i1] = image;
 			}
-			MonsterType mt = new MonsterType(name, minHealth, maxHealth, minDamage, maxDamage, randomChance, images);
+			//TODO add xp to read in file
+			MonsterType mt = new MonsterType(name, minHealth, maxHealth, 5, minDamage, maxDamage, randomChance, images);
 			MONSTER_TYPES.put(name, mt);
 		}
 	}
@@ -96,7 +97,7 @@ public class MonsterFactory {
 		
 		int health = RANDOM.nextInt(highHealth - lowHealth + 1) + lowHealth;
 		
-		Monster monster = new Monster(mt.getName(), health, mt.getLowerDamage(), mt.getHigherDamage(), mt.getImages());
+		Monster monster = new Monster(mt.getName(), health, mt.getXpToGive(), mt.getLowerDamage(), mt.getHigherDamage(), mt.getImages());
 		return monster;
 	}
 }

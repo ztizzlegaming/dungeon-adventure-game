@@ -16,6 +16,8 @@ public class MonsterType {
 	private int lowerHealth;
 	private int higherHealth;
 	
+	private int xpToGive;
+	
 	private int lowerDamage;
 	private int higherDamage;
 	
@@ -33,10 +35,11 @@ public class MonsterType {
 	 * @param randomChance The random chance for this monster to appear in a room, if a random
 	 * monster should be in the room (int from 1-100)
 	 */
-	public MonsterType(String name, int lowerHealth, int higherHealth, int lowerDamage, int higherDamage, int randomChance, ImageIcon[] images) {
+	public MonsterType(String name, int lowerHealth, int higherHealth, int xpToGive, int lowerDamage, int higherDamage, int randomChance, ImageIcon[] images) {
 		this.name = name;
 		this.lowerHealth = lowerHealth;
 		this.higherHealth = higherHealth;
+		this.xpToGive = xpToGive;
 		this.lowerDamage = lowerDamage;
 		this.higherDamage = higherDamage;
 		this.randomChance = randomChance;
@@ -53,6 +56,10 @@ public class MonsterType {
 	
 	public int getHigherHealth() {
 		return higherHealth;
+	}
+	
+	public int getXpToGive() {
+		return xpToGive;
 	}
 	
 	public int getLowerDamage() {

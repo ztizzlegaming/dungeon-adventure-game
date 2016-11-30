@@ -22,6 +22,8 @@ public class Monster {
 	private final int maxHealth;
 	private boolean alive;
 	
+	private int xpToGive;
+	
 	private int lowerDamage;
 	private int higherDamage;
 	
@@ -36,12 +38,14 @@ public class Monster {
 	 * @param higherDamage The maximum amount of damage this monster can do
 	 * @param animationFrames The array of images (ImageIcon objects) for this monster
 	 */
-	public Monster(String name, int health, int lowerDamage, int higherDamage, ImageIcon[] animationFrames) {
+	public Monster(String name, int health, int xpToGive, int lowerDamage, int higherDamage, ImageIcon[] animationFrames) {
 		this.name = name;
 		
 		this.health = health;
 		maxHealth = health;
 		alive = true;
+		
+		this.xpToGive = xpToGive;
 		
 		this.lowerDamage = lowerDamage;
 		this.higherDamage = higherDamage;
@@ -60,6 +64,10 @@ public class Monster {
 	
 	public int getMaxHealth() {
 		return maxHealth;
+	}
+	
+	public int getXp() {
+		return xpToGive;
 	}
 	
 	public void doDamage(int damage) {

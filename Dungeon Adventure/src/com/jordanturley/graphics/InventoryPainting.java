@@ -70,6 +70,11 @@ public class InventoryPainting extends JComponent {
 		String weightStr = "Load:" + player.getInventoryWeight() + "/" + player.getMaxInventoryWeight();
 		g.drawString(weightStr, itemSize * 2 + 10, NUM_ITEMS_HEIGHT * itemSize + itemSize / 2 + Window.TEXT_OFFSET);
 		
-		//TODO Add XP, and show the player's level and current xp below their health
+		//Draw the player's xp and level
+		int xp = player.getXp();
+		int maxXp = player.getLevelUpXp();
+		int level = player.getLevel();
+		String xpStr = xp + "xp/" + maxXp + "xp, Level " + level;
+		g.drawString(xpStr, 35, (NUM_ITEMS_HEIGHT + 1) * itemSize + itemSize / 2 + Window.TEXT_OFFSET);
 	}
 }
