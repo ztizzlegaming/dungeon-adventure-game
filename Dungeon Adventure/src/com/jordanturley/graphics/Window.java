@@ -4,11 +4,12 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
+import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -167,21 +168,38 @@ public class Window extends JFrame implements KeyListener {
 		mapDialog.setContentPane(mapPanel);
 	}
 
-	@Override
-	public void keyPressed(KeyEvent e) {
-		int code = e.getKeyCode();
-		if (code == KeyEvent.VK_W) {
-			moveForward();
-		} else if (code == KeyEvent.VK_S) {
-			moveBack();
-		} else if (code == KeyEvent.VK_A) {
-			moveLeft();
-		} else if (code == KeyEvent.VK_D) {
-			moveRight();
-		} else if (code == KeyEvent.VK_Q) {
-			turnLeft();
-		} else if (code == KeyEvent.VK_E) {
-			turnRight();
+	/**
+	 * Listens for W, S, A, D, Q, and E key presses to move player, or Escape to exit game
+	 * 
+	 * @author Jordan Turley
+	 */
+	private class MoveKeyListener extends KeyAdapter {
+		@Override
+		public void keyPressed(KeyEvent e) {
+			int code = e.getKeyCode();
+
+			if (game.getPlayer().isAlive()) {
+				if (code == KeyEvent.VK_W) {
+					moveForward();
+				} else if (code == KeyEvent.VK_S) {
+					moveBack();
+				} else if (code == KeyEvent.VK_A) {
+					moveLeft();
+				} else if (code == KeyEvent.VK_D) {
+					moveRight();
+				} else if (code == KeyEvent.VK_Q) {
+					turnLeft();
+				} else if (code == KeyEvent.VK_E) {
+					turnRight();
+				}
+			}
+
+			if (code == KeyEvent.VK_ESCAPE) {
+				System.exit(0);
+			}
+		}
+	}
+
 	/**
 	 * Checks if the music should change after moving from one room to another
 	 */
@@ -206,10 +224,172 @@ public class Window extends JFrame implements KeyListener {
 		}
 	}
 
+	/**
+	 * Checks when one of the move buttons is pressed
+	 */
+	private class MoveButtonsMouseAdapter extends MouseAdapter {
+		@Override
+		public void mousePressed(MouseEvent e) {
+			if (game.getPlayer().isAlive()) {
+				int buttonWidth = moveButtonsPanel.getWidth() / 3;
+				int buttonHeight = moveButtonsPanel.getHeight() / 4;
+				int x = e.getX();
+				int y = e.getY();
+
+				if (x > 0 && x <= buttonWidth && y > 0 && y <= buttonHeight) {
+					turnLeft();
+				} else if (x > buttonWidth && x <= buttonWidth * 2 && y > 0 && y <= buttonHeight) {
+					moveForward();
+				} else if (x > buttonWidth * 2 && x <= buttonWidth * 3 && y > 0 && y <= buttonHeight) {
+					turnRight();
+				} else if (x > 0 && x <= buttonWidth && y > buttonHeight && y <= buttonHeight * 2) {
+					moveLeft();
+				} else if (x > buttonWidth * 2 && x <= buttonWidth * 3 && y > buttonHeight && y <= buttonHeight * 2) {
+					moveRight();
+				} else if (x > buttonWidth && x <= buttonWidth * 2 && y > buttonHeight * 2 && y <= buttonHeight * 3) {
+					moveBack();
+				}
+			}
+		}
+	}
+
+	/**
+	 * Checks when the first person view is clicked on, for attacking monsters or picking up items
+	 */
+	private class FirstPersonPaintingMouseAdapter extends MouseAdapter {
+		@Override
+		public void mousePressed(MouseEvent e) {
+			int x = e.getX();
+			int y = e.getY();
+
+			int panelWidth = firstPersonPainting.getWidth() / 3;
+			int paintingHeight = firstPersonPainting.getHeight();
+
+			int itemImgSize = panelWidth / 3;
+
+			if (game.getPlayer().isAlive()) {
+				//Check for picking up items
+				if (x > panelWidth && x < panelWidth * 2) {
+					if (y > paintingHeight - FirstPersonPainting.ITEM_IMAGE_BOTTOM_MARGIN - itemImgSize && y < paintingHeight - FirstPersonPainting.ITEM_IMAGE_BOTTOM_MARGIN) {
+						x -= panelWidth;
+						int idx = x / itemImgSize;
+						tryToPickupItem(idx);
+					}
+				}
+
+				//Check for attacking monster
+				if (x > panelWidth + (panelWidth / 2 - FirstPersonPainting.MONSTER_IMAGE_WIDTH / 2) &&
+						x < panelWidth + (panelWidth / 2 + FirstPersonPainting.MONSTER_IMAGE_WIDTH / 2)) {
+
+					if (y > paintingHeight / 2 - FirstPersonPainting.MONSTER_IMAGE_HEIGHT / 2 - FirstPersonPainting.ITEM_IMAGE_BOTTOM_MARGIN &&
+							y < paintingHeight / 2 + FirstPersonPainting.MONSTER_IMAGE_HEIGHT / 2 - FirstPersonPainting.ITEM_IMAGE_BOTTOM_MARGIN) {
+						tryToAttackMonster();
+					}
+				}
+			}
 		}
 		
-		if (code == KeyEvent.VK_ESCAPE) {
-			System.exit(0);
+		/**
+		 * Tries to pickup the item at the given index, if there is an item there
+		 * @param idx The index of the item
+		 */
+		private void tryToPickupItem(int idx) {
+			Room room = game.getCurRoom();
+			if (room.getNumItems() >= idx + 1) {
+				Item item = room.getItem(idx);
+				Player player = game.getPlayer();
+				if (player.canCarry(item)) {
+					player.addItem(item);
+					room.removeItem(idx);
+					repaintForItems();
+				} else {
+					System.out.println("Can't carry this item! Too heavy!");
+					System.out.println(player + ", " + item.getWeight());
+				}
+			}
+		}
+		
+		/**
+		 * Tries to attack a monster in the room, if there is one
+		 */
+		private void tryToAttackMonster() {
+			if (game.getCurRoom().hasMonster()) {
+				Monster monster = game.getCurRoom().getMonster();
+				if (monster.isAlive()) {
+					Weapon curWeapon = game.getPlayer().getActiveWeapon();
+
+					monster.doDamage(curWeapon.getDamage());
+
+					//Called when the monster is first killed
+					if (!monster.isAlive()) {
+						game.getPlayer().addXp(monster.getXp());
+						inventoryPainting.repaint();
+						moveButtonsPainting.repaint();
+						checkMusicChange();
+					}
+
+					firstPersonPainting.repaint();
+				}
+			}
+		}
+	}
+
+	/**
+	 * Checks when the inventory painting is clicked on, for using or dropping an item
+	 */
+	private class InventoryPaintingMouseListener extends MouseAdapter {
+		@Override
+		public void mousePressed(MouseEvent e) {
+			if (game.getPlayer().isAlive()) {
+				int x = e.getX();
+				int y = e.getY();
+
+				//Calculate the size of the images in the painting
+				int imgSize = inventoryPainting.getWidth() / InventoryPainting.NUM_ITEMS_WIDTH;
+
+				//Calculate the height of the actual part that shows the items
+				//Can't just get height of inventory, because other things are shown below
+				int yItemsHeight = imgSize * InventoryPainting.NUM_ITEMS_HEIGHT;
+
+				if (y < yItemsHeight) {
+					int xIdx = x / imgSize;
+					int yIdx = y / imgSize;
+					int idx = xIdx + yIdx * InventoryPainting.NUM_ITEMS_WIDTH;
+					
+					//Try to use the item at this index
+					tryItem(idx, e);
+				}
+			}
+		}
+		
+		/**
+		 * Tries to use/drop an item, depending on the button clicked on the mouse, and if the player has
+		 * an item at that index in their inventory
+		 * @param idx The index of the item
+		 * @param e The MouseEvent, to get the mouse button pressed from
+		 */
+		private void tryItem(int idx, MouseEvent e) {
+			Player player = game.getPlayer();
+			if (player.getNumItems() >= idx + 1) { //Make sure it is a valid index
+				Item item = player.getItem(idx);
+
+				if (SwingUtilities.isLeftMouseButton(e)) { //Use the item
+					player.useItem(item);
+					repaintForItems();
+					System.out.println(item);
+				} else if (SwingUtilities.isRightMouseButton(e) && item.canDrop()) { //Drop the item
+					Room room = game.getCurRoom();
+					if (room.canHoldAnotherItem()) {
+						player.removeItem(idx);
+						room.addItem(item);
+						repaintForItems();
+					} else {
+						System.out.println("A room can hold a max of " + Room.MAX_ITEMS + " items");
+					}
+				} else {
+					System.out.println(item);
+				}
+			}
 		}
 	}
 	
@@ -308,167 +488,5 @@ public class Window extends JFrame implements KeyListener {
 		inventoryPainting.repaint();
 		mapPainting.repaint();
 		moveButtonsPainting.repaint();
-	}
-	
-	/**
-	 * Checks when one of the move buttons is pressed
-	 */
-	private class MoveButtonsMouseAdapter extends MouseAdapter {
-		@Override
-		public void mousePressed(MouseEvent e) {
-			int buttonWidth = moveButtonsPanel.getWidth() / 3;
-			int buttonHeight = moveButtonsPanel.getHeight() / 4;
-			int x = e.getX();
-			int y = e.getY();
-			
-			if (x > 0 && x <= buttonWidth && y > 0 && y <= buttonHeight) {
-				turnLeft();
-			} else if (x > buttonWidth && x <= buttonWidth * 2 && y > 0 && y <= buttonHeight) {
-				moveForward();
-			} else if (x > buttonWidth * 2 && x <= buttonWidth * 3 && y > 0 && y <= buttonHeight) {
-				turnRight();
-			} else if (x > 0 && x <= buttonWidth && y > buttonHeight && y <= buttonHeight * 2) {
-				moveLeft();
-			} else if (x > buttonWidth * 2 && x <= buttonWidth * 3 && y > buttonHeight && y <= buttonHeight * 2) {
-				moveRight();
-			} else if (x > buttonWidth && x <= buttonWidth * 2 && y > buttonHeight * 2 && y <= buttonHeight * 3) {
-				moveBack();
-			}
-		}
-	}
-	
-	/**
-	 * Checks when the first person view is clicked on, for attacking monsters or picking up items
-	 */
-	private class FirstPersonPaintingMouseListener extends MouseAdapter {
-		@Override
-		public void mousePressed(MouseEvent e) {
-			int x = e.getX();
-			int y = e.getY();
-			
-			int panelWidth = firstPersonPainting.getWidth() / 3;
-			int paintingHeight = firstPersonPainting.getHeight();
-			
-			int itemImgSize = panelWidth / 3;
-			
-			//TODO move a lot of this to the Game class. The window class should be mainly for graphics.
-			//TODO Just check here if the click is in the right place, then send it to the Game class to handle it
-			
-			if (x > panelWidth && x < panelWidth * 2) {
-				if (y > paintingHeight - FirstPersonPainting.ITEM_IMAGE_BOTTOM_MARGIN - itemImgSize && y < paintingHeight - FirstPersonPainting.ITEM_IMAGE_BOTTOM_MARGIN) {
-					x -= panelWidth;
-					int idx = x / itemImgSize;
-					Room room = game.getCurRoom();
-					if (room.getNumItems() >= idx + 1) {
-						Item item = room.getItem(idx);
-						Player player = game.getPlayer();
-						if (player.canCarry(item)) {
-							player.addItem(item);
-							room.removeItem(idx);
-							repaintForItems();
-						} else {
-							System.out.println("Can't carry this item! Too heavy!");
-							System.out.println(player + ", " + item.getWeight());
-						}
-					}
-				}
-			}
-			
-			if (x > panelWidth + (panelWidth / 2 - FirstPersonPainting.MONSTER_IMAGE_WIDTH / 2) &&
-				x < panelWidth + (panelWidth / 2 + FirstPersonPainting.MONSTER_IMAGE_WIDTH / 2)) {
-				
-				if (y > paintingHeight / 2 - FirstPersonPainting.MONSTER_IMAGE_HEIGHT / 2 - FirstPersonPainting.ITEM_IMAGE_BOTTOM_MARGIN &&
-					y < paintingHeight / 2 + FirstPersonPainting.MONSTER_IMAGE_HEIGHT / 2 - FirstPersonPainting.ITEM_IMAGE_BOTTOM_MARGIN) {
-					if (game.getCurRoom().hasMonster()) {
-						Monster monster = game.getCurRoom().getMonster();
-						if (monster.isAlive()) {
-							Weapon curWeapon = game.getPlayer().getActiveWeapon();
-							
-							monster.doDamage(curWeapon.getDamage());
-							firstPersonPainting.repaint();
-						}
-					}
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Checks when the inventory painting is clicked on, for using or dropping an item
-	 */
-	private class InventoryPaintingMouseListener extends MouseAdapter {
-		@Override
-		public void mousePressed(MouseEvent e) {
-			int x = e.getX();
-			int y = e.getY();
-			
-			//Calculate the size of the images in the painting
-			int imgSize = inventoryPainting.getWidth() / InventoryPainting.NUM_ITEMS_WIDTH;
-			
-			//Calculate the height of the actual part that shows the items
-			int yItemsHeight = imgSize * InventoryPainting.NUM_ITEMS_HEIGHT;
-			
-			//TODO move a lot of this to the Game class. The window class should be mainly for graphics.
-			//TODO Just check here if the click is in the right place, then send it to the Game class to handle it
-			
-			if (y < yItemsHeight) {
-				int xIdx = x / imgSize;
-				int yIdx = y / imgSize;
-				int idx = xIdx + yIdx * InventoryPainting.NUM_ITEMS_WIDTH;
-				
-				Player player = game.getPlayer();
-				if (player.getNumItems() >= idx + 1) { //Make sure it is a valid index
-					Item item = player.getItem(idx);
-					
-					if (SwingUtilities.isLeftMouseButton(e)) { //Use the item
-						player.useItem(item);
-						repaintForItems();
-					} else if (SwingUtilities.isRightMouseButton(e) && item.canDrop()) { //Drop the item
-						Room room = game.getCurRoom();
-						if (room.canHoldAnotherItem()) {
-							player.removeItem(idx);
-							room.addItem(item);
-							repaintForItems();
-						} else {
-							System.out.println("A room can hold a max of " + Room.MAX_ITEMS + " items");
-						}
-					} else {
-						//Middle mouse button, print name of item and it's info?
-					}
-				}
-			}
-		}
-	}
-	
-	@Override
-	public void keyReleased(KeyEvent e) {}
-
-	@Override
-	public void keyTyped(KeyEvent e) {}
-	
-	/**
-	 * This class is used by the monsterThread object, for controlling all of the monsters in the game.
-	 * It is started as soon as the game is started, and if the room has a monster, it animates it
-	 * and attacks the player.
-	 */
-	private class MonsterThreadRunnable implements Runnable {
-		@Override
-		public void run() {
-			while (true) {
-				try {
-					Thread.sleep(750);
-					
-					Room curRoom = game.getCurRoom();
-					if (curRoom.hasMonster() && curRoom.getMonster().isAlive()) {
-						curRoom.getMonster().nextImage();
-						game.getPlayer().doDamage(curRoom.getMonster().getDamage());
-						firstPersonPainting.repaint();
-						moveButtonsPainting.repaint();
-					}
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		}
 	}
 }
