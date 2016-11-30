@@ -34,23 +34,24 @@ import com.jordanturley.thread.MusicRunnable;
  * 
  * @author Jordan Turley
  */
-public class Window extends JFrame implements KeyListener {
+public class Window extends JFrame {
 	private static final long serialVersionUID = 1L;
-	
+
 	public static final Dimension SIZE = new Dimension(600, 800);
 	public static final Dimension MAP_DIALOG_SIZE = new Dimension(500, 400);
 	public static final int SOUTH_PANEL_HEIGHT = 250;
-	
+
 	public static final File CALM_MUSIC = new File("audio" + File.separator + "The_Weeknd_-_Starboy_feat.wav");
 	public static final File ACTION_MUSIC = new File("audio" + File.separator + "Kenny_Loggins_-_Danger_Zone.wav");
+
 	/**
 	 * A small text offset used for drawing the player's direction and health in MoveButtonsPainting, and
 	 * the player's inventory weight in InventoryPainting
 	 */
 	public static final int TEXT_OFFSET = 10;
-	
+
 	private Game game;
-	
+
 	private JPanel mainPanel;
 	private JPanel moveButtonsPanel;
 	private JDialog mapDialog;
@@ -59,20 +60,34 @@ public class Window extends JFrame implements KeyListener {
 	private InventoryPainting inventoryPainting;
 	private FirstPersonPainting firstPersonPainting;
 	
+	private MoveKeyListener moveKeyListener;
+
+	private MusicRunnable musicRunnable;
+	private boolean monsterSoundPlaying;
+
 	private Thread monsterThread;
 
-	public Window() throws IOException {
+	/**
+	 * Creates a new Window, using the default maze.txt file
+	 * @throws Exception
+	 */
+	public Window() throws Exception {
+		this("maze.txt");
+	}
+
+	/**
+	 * Creates a new Window, using a custom text file
+	 * @param mazefile The maze file to use
+	 * @throws Exception If something goes wrong with the music player
+	 */
+	public Window(String mazefile) throws Exception {
 		super("Dungeon Adventure");
-		
 		setSize(SIZE);
 		setLocationRelativeTo(null);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		game = new Game("maze.txt");
-		
-		monsterThread = new Thread(new MonsterThreadRunnable());
-		monsterThread.start();
+
+		game = new Game(mazefile);
 		
 		setupMainPanel();
 		setupMapDialog();
@@ -94,47 +109,57 @@ public class Window extends JFrame implements KeyListener {
 
 		setVisible(true);
 	}
-	
+
+	/**
+	 * Sets up the main JPanel, for the first person view, move buttons, inventory, and map button
+	 */
 	private void setupMainPanel() {
+		//Init main JPanel
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new BorderLayout());
 		mainPanel.setFocusable(true);
-		mainPanel.addKeyListener(this);
 		
+		moveKeyListener = new MoveKeyListener();
+		mainPanel.addKeyListener(moveKeyListener);
+
+		//Init first person view, add mouse listener, add it to mainPanel
 		JPanel firstPersonView = new JPanel();
 		firstPersonView.setLayout(new BorderLayout());
-		firstPersonPainting = new FirstPersonPainting();
-		firstPersonPainting.addMouseListener(new FirstPersonPaintingMouseListener());
+		firstPersonPainting = new FirstPersonPainting(game.getPlayer());
+		firstPersonPainting.addMouseListener(new FirstPersonPaintingMouseAdapter());
 		setFirstPersonViewDir();
 		setFirstPersonViewRoom();
 		firstPersonView.add(firstPersonPainting, BorderLayout.CENTER);
 		mainPanel.add(firstPersonView, BorderLayout.CENTER);
-		
+
+		//Init south panel, holds move buttons, inventory view, and map button
 		JPanel southPanel = new JPanel();
 		southPanel.setPreferredSize(new Dimension(0, SOUTH_PANEL_HEIGHT));
 		southPanel.setLayout(new BorderLayout());
 		mainPanel.add(southPanel, BorderLayout.SOUTH);
-		
+
+		//Init map button panel and map button
 		JPanel mapButtonPanel = new JPanel();
 		mapButtonPanel.setPreferredSize(new Dimension(175, 0));
 		mapButtonPanel.setLayout(new BorderLayout());
-		
+
 		JButton mapButton = new JButton("Map");
-		
+
 		////////////////////////////////////////////////////////////////////////
 		mapButton.setFocusable(false); //Best line of code in the entire program
 		////////////////////////////////////////////////////////////////////////
-		
+
 		mapButtonPanel.add(mapButton, BorderLayout.CENTER);
-		
+
 		mapButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				mapDialog.setVisible(!mapDialog.isVisible());
 			}
 		});
-		
+
 		southPanel.add(mapButtonPanel, BorderLayout.EAST);
-		
+
+		//Init move buttons panel and add mouse listener
 		moveButtonsPanel = new JPanel();
 		moveButtonsPanel.setPreferredSize(new Dimension(175, 0));
 		moveButtonsPanel.setLayout(new BorderLayout());
@@ -142,29 +167,34 @@ public class Window extends JFrame implements KeyListener {
 		moveButtonsPanel.add(moveButtonsPainting, BorderLayout.CENTER);
 		moveButtonsPanel.addMouseListener(new MoveButtonsMouseAdapter());
 		southPanel.add(moveButtonsPanel, BorderLayout.WEST);
-		
+
+		//Init inventory panel and add mouse listener
 		JPanel inventoryPanel = new JPanel();
 		inventoryPanel.setLayout(new BorderLayout());
 		inventoryPainting = new InventoryPainting(game.getPlayer());
 		inventoryPainting.addMouseListener(new InventoryPaintingMouseListener());
 		inventoryPanel.add(inventoryPainting, BorderLayout.CENTER);
 		southPanel.add(inventoryPanel, BorderLayout.CENTER);
-		
+
 		setContentPane(mainPanel);
 	}
-	
+
+	/**
+	 * Sets up the map popup JDialog
+	 */
 	private void setupMapDialog() {
 		mapDialog = new JDialog(this, "Map");
 		mapDialog.setSize(MAP_DIALOG_SIZE);
 		mapDialog.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
-		//mapDialog.setResizable(false);
-		mapDialog.addKeyListener(this);
 		
+		//Add the same key listener, so if the map is open and focused, it still moves the player
+		mapDialog.addKeyListener(moveKeyListener);
+
 		JPanel mapPanel = new JPanel();
 		mapPanel.setLayout(new BorderLayout());
 		mapPainting = new MapPainting(game.getRooms(), game.getPlayer());
 		mapPanel.add(mapPainting, BorderLayout.CENTER);
-		
+
 		mapDialog.setContentPane(mapPanel);
 	}
 
@@ -403,7 +433,7 @@ public class Window extends JFrame implements KeyListener {
 		setFirstPersonViewDir();
 		moveButtonsPainting.repaint();
 	}
-	
+
 	/**
 	 * Turns the player to the right. Called when 'E' is pressed on the keyboard or the 'turn right' button
 	 * is clicked in the GUI
@@ -414,7 +444,7 @@ public class Window extends JFrame implements KeyListener {
 		setFirstPersonViewDir();
 		moveButtonsPainting.repaint();
 	}
-	
+
 	/**
 	 * Moves the player forward. Called when 'W' is pressed on the keyboard or the 'up' button is clicked
 	 * in the GUI
@@ -467,9 +497,9 @@ public class Window extends JFrame implements KeyListener {
 		int dir = game.getPlayer().getDirection();
 		firstPersonPainting.setDirectionLooking(dir);
 		firstPersonPainting.repaint();
-		
+
 	}
-	
+
 	/**
 	 * Sets the current room the player is in on the first person painting object. Called when
 	 * the player moves from one room to another
@@ -479,7 +509,7 @@ public class Window extends JFrame implements KeyListener {
 		firstPersonPainting.setCurRoom(curRoom);
 		firstPersonPainting.repaint();
 	}
-	
+
 	/**
 	 * Repaints the first person view, inventory, and map, when an item is picked up or dropped
 	 */
