@@ -8,6 +8,7 @@ import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
+import com.jordanturley.game.Player;
 import com.jordanturley.item.Item;
 import com.jordanturley.monster.Monster;
 import com.jordanturley.room.Room;
@@ -30,9 +31,11 @@ public class FirstPersonPainting extends JComponent {
 
 	private int dir;
 	private Room curRoom;
+	private Player player;
 	
-	public FirstPersonPainting() {
+	public FirstPersonPainting(Player player) {
 		super();
+		this.player = player;
 	}
 	
 	public void setDirectionLooking(int dir) {
@@ -88,6 +91,26 @@ public class FirstPersonPainting extends JComponent {
 			int textX = startX + MONSTER_IMAGE_WIDTH / 2 - textWidth / 2;
 			g.drawString(monsterHealth, textX, startY - 3);
 			g.drawImage(monsterImage.getImage(), startX, startY, MONSTER_IMAGE_WIDTH, MONSTER_IMAGE_HEIGHT, null);
+		}
+		
+		if (!player.isAlive()) { //If the player is dead, draw "GAME OVER" to the screen
+			g.setFont(new Font(g.getFont().getFontName(), Font.PLAIN, 80));
+			
+			String deadStr = "GAME OVER";
+			int deadTextWidth = g.getFontMetrics().stringWidth(deadStr);
+			int deadTextHeight = g.getFontMetrics().getHeight();
+			
+			//Draw black background behind text
+			g.setColor(Color.BLACK);
+			g.fillRect(getWidth() / 2 - deadTextWidth / 2, getHeight() / 2 - deadTextHeight / 2, deadTextWidth, deadTextHeight);
+			
+			//Draw white outline
+			g.setColor(Color.WHITE);
+			g.drawRect(getWidth() / 2 - deadTextWidth / 2, getHeight() / 2 - deadTextHeight / 2, deadTextWidth, deadTextHeight);
+			
+			//Draw text in red
+			g.setColor(Color.RED);
+			g.drawString(deadStr, getWidth() / 2 - deadTextWidth / 2, getHeight() / 2 + deadTextHeight / 4);
 		}
 	}
 }
