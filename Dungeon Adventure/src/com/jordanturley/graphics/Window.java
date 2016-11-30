@@ -405,7 +405,6 @@ public class Window extends JFrame {
 				if (SwingUtilities.isLeftMouseButton(e)) { //Use the item
 					player.useItem(item);
 					repaintForItems();
-					System.out.println(item);
 				} else if (SwingUtilities.isRightMouseButton(e) && item.canDrop()) { //Drop the item
 					Room room = game.getCurRoom();
 					if (room.canHoldAnotherItem()) {
@@ -415,7 +414,7 @@ public class Window extends JFrame {
 					} else {
 						System.out.println("A room can hold a max of " + Room.MAX_ITEMS + " items");
 					}
-				} else {
+				} else { //Print out info for the item
 					System.out.println(item);
 				}
 			}
