@@ -26,4 +26,9 @@ public class Weapon extends Item {
 	public int getDamage() {
 		return Game.RANDOM.nextInt(maxDamage - minDamage + 1) + minDamage;
 	}
+	
+	@Override
+	public String toString() {
+		return name + " - damage: " + minDamage + "-" + maxDamage;
+	}
 }

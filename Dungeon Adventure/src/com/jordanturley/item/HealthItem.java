@@ -20,4 +20,9 @@ public class HealthItem extends Item {
 	public int getHealthRestore() {
 		return healthRestore;
 	}
+	
+	@Override
+	public String toString() {
+		return name + " - restores: " + healthRestore;
+	}
 }

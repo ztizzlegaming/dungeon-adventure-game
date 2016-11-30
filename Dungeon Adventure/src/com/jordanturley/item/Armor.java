@@ -19,4 +19,9 @@ public class Armor extends Item {
 	public int getDamageReduction() {
 		return damageReduction;
 	}
+	
+	@Override
+	public String toString() {
+		return name + " - weighs " + weight + " - damage reduction: " + damageReduction + "%";
+	}
 }
