@@ -9,11 +9,11 @@ import javax.swing.ImageIcon;
  * @author Jordan Turley
  */
 public abstract class Item {
-	private String name;
-	private int weight;
-	private boolean canDrop;
+	protected String name;
+	protected int weight;
+	protected boolean canDrop;
 	
-	private ImageIcon image;
+	protected ImageIcon image;
 	
 	/**
 	 * Creates a new Item object
