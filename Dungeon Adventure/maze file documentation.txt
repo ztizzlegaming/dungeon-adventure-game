@@ -1,8 +1,8 @@
 Monsters:[number of types of monsters in game]
-monster_1_name:[lower health bound]-[higher health bound]:[lower damage bound]-[higher damage bound]:[percentage chance of being in random room]
-monster_2_name:[lower health bound]-[higher health bound]:[lower damage bound]-[higher damage bound]:[percentage chance of being in random room]
+monster_1_name:[lower health bound]-[higher health bound]:[lower damage bound]-[higher damage bound]:[percentage chance of being in random room]:[xp to give]
+monster_2_name:[lower health bound]-[higher health bound]:[lower damage bound]-[higher damage bound]:[percentage chance of being in random room]:[xp to give]
 ...repeat for as many types of monsters as there are in the game
-monster_n_name:[lower health bound]-[higher health bound]:[lower damage bound]-[higher damage bound]:[percentage chance of being in random room]
+monster_n_name:[lower health bound]-[higher health bound]:[lower damage bound]-[higher damage bound]:[percentage chance of being in random room]:[xp to give]
 Items:[number of types of items in the game]
 item_1_name:[item 1 type: armor, weapon, or health]:[armor damage reduction rate, weapon damage range (5-10), or health restored]:[item weight]
 item_2_name:[item 1 type: armor, weapon, or health]:[armor damage reduction rate, weapon damage range (5-10), or health restored]:[item weight]

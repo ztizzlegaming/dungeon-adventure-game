@@ -1,7 +1,7 @@
 Monsters:3
-kobold:10-15:5-10:50
-ogre:25-30:15-20:35
-dragon:75-100:25-35:15
+kobold:10-15:5-10:50:5
+ogre:25-30:15-20:35:10
+dragon:75-100:25-35:15:15
 Items:5
 health potion:health:10:1
 dagger:weapon:5-10:5

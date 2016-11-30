@@ -30,7 +30,7 @@ public class MonsterFactory {
 	 * @param randomPercentage The percentage for the monster to appear in a room when there
 	 * is a random monster in a room (1-100)
 	 */
-	public static void createMonsterType(String name, String healthStr, String damageStr, String randomPercentage) { 
+	public static void createMonsterType(String name, String healthStr, String damageStr, String randomPercentage, String xpStr) { 
 		if (!MONSTER_TYPES.containsKey(name)) { //If this type of monster isn't already in the map
 			//Parse the min and max health
 			String[] healthStrParts = healthStr.split("-");
@@ -51,8 +51,10 @@ public class MonsterFactory {
 				ImageIcon image = new ImageIcon(path);
 				images[i1] = image;
 			}
-			//TODO add xp to read in file
-			MonsterType mt = new MonsterType(name, minHealth, maxHealth, 5, minDamage, maxDamage, randomChance, images);
+
+			int xp = Integer.parseInt(xpStr);
+			
+			MonsterType mt = new MonsterType(name, minHealth, maxHealth, xp, minDamage, maxDamage, randomChance, images);
 			MONSTER_TYPES.put(name, mt);
 		}
 	}

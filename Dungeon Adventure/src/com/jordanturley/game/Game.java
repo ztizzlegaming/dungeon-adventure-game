@@ -59,8 +59,9 @@ public class Game {
 			String healthStr = monsterParts[1];
 			String damageStr = monsterParts[2];
 			String randomPercentageStr = monsterParts[3];
+			String xpStr = monsterParts[4];
 			
-			MonsterFactory.createMonsterType(monsterName, healthStr, damageStr, randomPercentageStr);
+			MonsterFactory.createMonsterType(monsterName, healthStr, damageStr, randomPercentageStr, xpStr);
 		}
 	}
 	
