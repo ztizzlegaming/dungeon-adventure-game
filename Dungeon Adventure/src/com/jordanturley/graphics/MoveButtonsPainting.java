@@ -2,7 +2,7 @@ package com.jordanturley.graphics;
 
 import java.awt.Font;
 import java.awt.Graphics;
-import java.io.File;
+import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -18,13 +18,13 @@ import com.jordanturley.game.Player;
 public class MoveButtonsPainting extends JComponent {
 	private static final long serialVersionUID = 1L;
 	
-	private static final String BASE_DIR = "images" + File.separator + "movement" + File.separator;
-	private static final ImageIcon UP = new ImageIcon(BASE_DIR + "up.png");
-	private static final ImageIcon DOWN = new ImageIcon(BASE_DIR + "down.png");
-	private static final ImageIcon LEFT = new ImageIcon(BASE_DIR + "left.png");
-	private static final ImageIcon RIGHT = new ImageIcon(BASE_DIR + "right.png");
-	private static final ImageIcon TURN_LEFT = new ImageIcon(BASE_DIR + "turn_left.png");
-	private static final ImageIcon TURN_RIGHT = new ImageIcon(BASE_DIR + "turn_right.png");
+	private static final String BASE_DIR = "/images/movement/";
+	private static final ImageIcon UP = new ImageIcon(MoveButtonsPainting.class.getResource(BASE_DIR + "up.png"));
+	private static final ImageIcon DOWN = new ImageIcon(MoveButtonsPainting.class.getResource(BASE_DIR + "down.png"));
+	private static final ImageIcon LEFT = new ImageIcon(MoveButtonsPainting.class.getResource(BASE_DIR + "left.png"));
+	private static final ImageIcon RIGHT = new ImageIcon(MoveButtonsPainting.class.getResource(BASE_DIR + "right.png"));
+	private static final ImageIcon TURN_LEFT = new ImageIcon(MoveButtonsPainting.class.getResource(BASE_DIR + "turn_left.png"));
+	private static final ImageIcon TURN_RIGHT = new ImageIcon(MoveButtonsPainting.class.getResource(BASE_DIR + "turn_right.png"));
 	
 	private Player player;
 	
@@ -32,6 +32,7 @@ public class MoveButtonsPainting extends JComponent {
 		super();
 		
 		this.player = player;
+		MoveButtonsPainting.class.getResourceAsStream("");
 	}
 	
 	@Override

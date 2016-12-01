@@ -8,6 +8,8 @@ import com.jordanturley.game.Game;
  * The <code>Monster</code> class stores the information for monsters in the dungeon game, such as name,
  * health, min and max damage, and the images to use for it.
  * 
+ * Kate gave me the idea to put the comp sci professors' faces on the monsters
+ * 
  * @author Jordan Turley
  */
 public class Monster {

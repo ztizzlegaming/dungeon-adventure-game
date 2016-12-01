@@ -1,6 +1,5 @@
 package com.jordanturley.monster;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,8 +46,12 @@ public class MonsterFactory {
 			
 			ImageIcon[] images = new ImageIcon[Monster.NUM_ANIMATION_FRAMES];
 			for (int i1 = 0; i1 < Monster.NUM_ANIMATION_FRAMES; i1++) {
-				String path = "images" + File.separator + "monsters" + File.separator + name + "_" + (i1 + 1) + ".png";
-				ImageIcon image = new ImageIcon(path);
+				String path = "/images/monsters/" + name + "_" + (i1 + 1) + ".png";
+				java.net.URL url = MonsterFactory.class.getResource(path);
+				if (url == null) {
+					continue;
+				}
+				ImageIcon image = new ImageIcon(url);
 				images[i1] = image;
 			}
 

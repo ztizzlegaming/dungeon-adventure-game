@@ -1,8 +1,11 @@
 package com.jordanturley.game;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.Random;
 
 import com.jordanturley.item.ItemFactory;
@@ -31,8 +34,17 @@ public class Game {
 	 * @param filename The file to read the map from
 	 * @throws IOException If the map file cannot be found
 	 */
-	public Game(String filename) throws IOException {
-		BufferedReader reader = new BufferedReader(new FileReader(filename));
+	public Game(URL file) throws IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(file.openStream()));
+		readIn(reader);
+	}
+	
+	public Game(File file) throws IOException {
+		BufferedReader reader = new BufferedReader(new FileReader(file));
+		readIn(reader);
+	}
+	
+	private void readIn(BufferedReader reader) throws IOException {
 		readInMonsters(reader);
 		readInItems(reader);
 		readInRooms(reader);

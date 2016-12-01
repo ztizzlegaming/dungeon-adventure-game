@@ -1,6 +1,5 @@
 package com.jordanturley.game;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +33,7 @@ public class Player {
 			"fists",
 			0,
 			false,
-			new ImageIcon("images" + File.separator + "items" + File.separator + "fists.png"),
+			new ImageIcon(Player.class.getResource("/images/items/fists.png")),
 			2,
 			4);
 	
@@ -42,7 +41,7 @@ public class Player {
 			"t shirt",
 			0,
 			false,
-			new ImageIcon("images" + File.separator + "items" + File.separator + "t shirt.png"),
+			new ImageIcon(Player.class.getResource("/images/items/t shirt.png")),
 			0);
 	
 	private int x;

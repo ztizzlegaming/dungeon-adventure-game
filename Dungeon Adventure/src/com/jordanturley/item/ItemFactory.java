@@ -1,6 +1,5 @@
 package com.jordanturley.item;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,7 +31,8 @@ public class ItemFactory {
 		//Get the image for the item
 		ImageIcon image = null;
 		if (!IMAGES.containsKey(name)) {
-			image = new ImageIcon("images" + File.separator + "items" + File.separator + name + ".png");
+			String imagePath = "/images/items/" + name + ".png";
+			image = new ImageIcon(ItemFactory.class.getResource(imagePath));
 			IMAGES.put(name, image);
 		} else {
 			image = IMAGES.get(name);
@@ -75,7 +75,7 @@ public class ItemFactory {
 		Item item = ITEMS.get(itemName);
 		if (item == null) {
 			//This will happen if the user doesn't declare an item in the first part of the text file
-			throw new IllegalStateException("The item you tried to get was not found. Did you forget to declare it?");
+			throw new IllegalStateException("The item (" + itemName + ") you tried to get was not found. Did you forget to declare it?");
 		}
 		return item;
 	}

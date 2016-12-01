@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.net.URL;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -39,9 +40,21 @@ public class Window extends JFrame {
 	public static final Dimension SIZE = new Dimension(600, 800);
 	public static final Dimension MAP_DIALOG_SIZE = new Dimension(500, 400);
 	public static final int SOUTH_PANEL_HEIGHT = 250;
+	
+	private static final URL CALM_MUSIC = Window.class.getResource("/audio/The_Weeknd_-_Starboy_feat.wav");
+	private static final URL ACTION_MUSIC = Window.class.getResource("/audio/Kenny_Loggins_-_Danger_Zone.wav");
 
-	public static final File CALM_MUSIC = new File("audio" + File.separator + "The_Weeknd_-_Starboy_feat.wav");
-	public static final File ACTION_MUSIC = new File("audio" + File.separator + "Kenny_Loggins_-_Danger_Zone.wav");
+	//public static final File CALM_MUSIC = getFileForURL(CALM_MUSIC_URL);
+	//public static final File ACTION_MUSIC = getFileForURL(ACTION_MUSIC_URL);
+	
+	/* private static File getFileForURL(URL url) {
+		try {
+			return new File(url.toURI());
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+			return null;
+		}
+	} */
 
 	/**
 	 * A small text offset used for drawing the player's direction and health in MoveButtonsPainting, and
@@ -71,7 +84,7 @@ public class Window extends JFrame {
 	 * @throws Exception
 	 */
 	public Window() throws Exception {
-		this("maze.txt");
+		this("maze.txt", false);
 	}
 
 	/**
@@ -79,14 +92,18 @@ public class Window extends JFrame {
 	 * @param mazefile The maze file to use
 	 * @throws Exception If something goes wrong with the music player
 	 */
-	public Window(String mazefile) throws Exception {
+	public Window(String mazeFile, boolean customFile) throws Exception {
 		super("Dungeon Adventure");
 		setSize(SIZE);
 		setLocationRelativeTo(null);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-		game = new Game(mazefile);
+		
+		if (customFile) {
+			game = new Game(new File(mazeFile));
+		} else {
+			game = new Game(Window.class.getResource("/textfile/" + mazeFile));
+		}
 		
 		setupMainPanel();
 		setupMapDialog();
@@ -95,7 +112,7 @@ public class Window extends JFrame {
 		monsterThread = new Thread(mcr);
 		monsterThread.start();
 
-		File music;
+		URL music;
 		if (game.getCurRoom().hasMonster()) {
 			music = ACTION_MUSIC;
 		} else {

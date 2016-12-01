@@ -11,7 +11,7 @@ public class Runner {
 	public static void main(String[] args) {
 		try {
 			if (args.length > 0) {
-				new Window(args[0]);
+				new Window(args[0], true);
 			} else {
 				new Window();
 			}

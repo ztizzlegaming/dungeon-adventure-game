@@ -90,6 +90,7 @@ public class FirstPersonPainting extends JComponent {
 			int textWidth = g.getFontMetrics().stringWidth(monsterHealth);
 			int textX = startX + MONSTER_IMAGE_WIDTH / 2 - textWidth / 2;
 			g.drawString(monsterHealth, textX, startY - 3);
+
 			g.drawImage(monsterImage.getImage(), startX, startY, MONSTER_IMAGE_WIDTH, MONSTER_IMAGE_HEIGHT, null);
 		}
 		

@@ -1,6 +1,5 @@
 package com.jordanturley.room;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +21,7 @@ public class RoomFactory {
 		
 		int roomColor = (int) (Math.random() * 4) + 1;
 		roomColor = 1; //TODO Crop the rest of the pictures for the other colors
-		String imageBase = "images" + File.separator + "rooms" + File.separator + "texture" + roomColor + "_";
+		String imageBase = "/images/rooms/texture" + roomColor + "_";
 		
 		ImageIcon[][] allImages = new ImageIcon[4][];
 		ImageIcon[] northImages = new ImageIcon[3];
@@ -124,7 +123,7 @@ public class RoomFactory {
 		if (IMAGES.containsKey(imageName)) {
 			image = IMAGES.get(imageName);
 		} else {
-			image = new ImageIcon(imageName);
+			image = new ImageIcon(RoomFactory.class.getResource(imageName));
 			IMAGES.put(imageName, image);
 		}
 		return image;

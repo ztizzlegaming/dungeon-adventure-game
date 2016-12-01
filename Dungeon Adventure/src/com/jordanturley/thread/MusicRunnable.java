@@ -1,6 +1,6 @@
 package com.jordanturley.thread;
 
-import java.io.File;
+import java.net.URL;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -13,11 +13,11 @@ public class MusicRunnable implements Runnable {
 	private AudioInputStream audioInputStream;
 	private SourceDataLine sourceDataLine;
 	
-	public MusicRunnable (File music) throws Exception {
+	public MusicRunnable (URL music) throws Exception {
 		initAudioVars(music);
 	}
 	
-	public void changeMusic(File music) throws Exception {
+	public void changeMusic(URL music) throws Exception {
 		initAudioVars(music);
 		sourceDataLine.open(audioFormat);
 		sourceDataLine.start();
@@ -29,7 +29,7 @@ public class MusicRunnable implements Runnable {
 	 * I had no idea how to do this before looking this up
 	 * @throws Exception If something goes wrong with the music player or reading in music files
 	 */
-	private void initAudioVars(File music) throws Exception {
+	private void initAudioVars(URL music) throws Exception {
 		audioInputStream = AudioSystem.getAudioInputStream(music);
 		audioFormat = audioInputStream.getFormat();
 		DataLine.Info dataLineInfo = new DataLine.Info(SourceDataLine.class, audioFormat);
@@ -41,12 +41,14 @@ public class MusicRunnable implements Runnable {
 		byte[] audioBuffer = new byte[10000];
 		
 		try{
-			sourceDataLine.open(audioFormat);
-			sourceDataLine.start();
-			
 			int audioCount;
 
 			while (true) {
+				DataLine.Info dataLineInfo = new DataLine.Info(SourceDataLine.class, audioFormat);
+				sourceDataLine = (SourceDataLine) AudioSystem.getLine(dataLineInfo);
+				sourceDataLine.open(audioFormat);
+				sourceDataLine.start();
+				
 				while((audioCount = audioInputStream.read(audioBuffer, 0, audioBuffer.length)) != -1) {
 					if(audioCount > 0){
 						sourceDataLine.write(audioBuffer, 0, audioCount);

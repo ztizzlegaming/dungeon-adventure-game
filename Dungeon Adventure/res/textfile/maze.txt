@@ -1,0 +1,79 @@
+Monsters:4
+kobold:10-15:5-10:50:5
+ogre:20-30:10-25:30:10
+skeleton:40-60:15-20:15:15
+dragon:100-200:20-30:5:25
+Items:10
+small health potion:health:10:1
+medium health potion:health:20:2
+large health potion:health:30:3
+dagger:weapon:5-10:10
+sword:weapon:10-15:20
+mace:weapon:15-20:20
+greatsword:weapon:20-30:30
+chain mail:armor:10:10
+iron armor:armor:20:20
+heavy armor:armor:30:30
+4,5
+Monster:none
+Items:small health potion
+S
+Monster:kobold
+Items:none
+N,S
+Monster:none
+Items:small health potion
+N,S,E
+Monster:ogre
+Items:dagger
+N
+Monster:none
+Items:sword,medium health potion
+E,S
+Monster:ogre
+Items:small health potion
+N,S
+Monster:none
+Items:small health potion,chain mail
+N,S,W
+Monster:kobold
+Items:small health potion
+N,E
+Monster:ogre
+Items:medium health potion
+S,E,W
+Monster:skeleton
+Items:small health potion,iron armor
+N,S
+Monster:none
+Items:none
+N,S
+Monster:kobold
+Items:small health potion
+N,W
+Monster:kobold
+Items:none
+S,W
+Monster:kobold
+Items:small health potion
+N,S
+Monster:ogre
+Items:mace
+N,S
+Monster:skeleton
+Items:none
+N,E
+Monster:dragon
+Items:none
+S
+Monster:none
+Items:large health potion,medium health potion
+N,S
+Monster:kobold
+Items:greatsword
+N,S
+Monster:kobold
+Items:heavy armor
+N,W
+0,0
+100
