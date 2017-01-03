@@ -13,11 +13,15 @@ public class MusicRunnable implements Runnable {
 	private AudioInputStream audioInputStream;
 	private SourceDataLine sourceDataLine;
 	
+	private URL music;
+	
 	public MusicRunnable (URL music) throws Exception {
 		initAudioVars(music);
 	}
 	
 	public void changeMusic(URL music) throws Exception {
+		this.music = music;
+		
 		initAudioVars(music);
 		sourceDataLine.open(audioFormat);
 		sourceDataLine.start();
@@ -30,6 +34,8 @@ public class MusicRunnable implements Runnable {
 	 * @throws Exception If something goes wrong with the music player or reading in music files
 	 */
 	private void initAudioVars(URL music) throws Exception {
+		this.music = music;
+		
 		audioInputStream = AudioSystem.getAudioInputStream(music);
 		audioFormat = audioInputStream.getFormat();
 		DataLine.Info dataLineInfo = new DataLine.Info(SourceDataLine.class, audioFormat);
@@ -38,23 +44,24 @@ public class MusicRunnable implements Runnable {
 	
 	@Override
 	public void run() {
-		byte[] audioBuffer = new byte[10000];
-		
 		try{
-			int audioCount;
+			byte[] audioBuffer = new byte[10000];
+			int audioCount = 0;
 
-			while (true) {
-				DataLine.Info dataLineInfo = new DataLine.Info(SourceDataLine.class, audioFormat);
-				sourceDataLine = (SourceDataLine) AudioSystem.getLine(dataLineInfo);
-				sourceDataLine.open(audioFormat);
-				sourceDataLine.start();
-				
-				while((audioCount = audioInputStream.read(audioBuffer, 0, audioBuffer.length)) != -1) {
-					if(audioCount > 0){
-						sourceDataLine.write(audioBuffer, 0, audioCount);
-					}
+			DataLine.Info dataLineInfo = new DataLine.Info(SourceDataLine.class, audioFormat);
+			sourceDataLine = (SourceDataLine) AudioSystem.getLine(dataLineInfo);
+			sourceDataLine.open(audioFormat);
+			sourceDataLine.start();
+
+			while(audioCount != -1) {
+				audioCount = audioInputStream.read(audioBuffer, 0, audioBuffer.length);
+				if(audioCount > 0){
+					sourceDataLine.write(audioBuffer, 0, audioCount);
 				}
 			}
+			
+			changeMusic(music);
+			run();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

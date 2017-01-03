@@ -2,7 +2,6 @@ package com.jordanturley.graphics;
 
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
